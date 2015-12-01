@@ -125,7 +125,7 @@ To do this, we'll need a few steps:
 Following this, you should test your login/signup system thoroughly.
 
 ## Part 11: filtering, sorting, pagination and relationships
-With our newly-acquired knowledge of using the Sequelize ORM, we will have a much easier time adding filtering, sorting, pagination and relationships to make our API more pleasing to use. Here is a brief overview of each of these features:
+With our newly-acquired knowledge of using the [Sequelize ORM](https://github.com/sequelize/sequelize), we will have a much easier time adding filtering, sorting, pagination and relationships to make our API more pleasing to use. Here is a brief overview of each of these features:
 
 ### Pagination
 When retrieving a list of entities the list can be quite long. Sometimes we only want to see a "page" of results, and either let the user click for further pages like on Google's search results, or let the user infinitely scroll to get more results like on Facebook's feed.
