@@ -6,6 +6,9 @@
 * Fork this repository and create a new Cloud9 project by cloning your fork
 * For this workshop you can do all your work in the `master` branch :)
 * After each part, **make sure to commit AND push your work**!
+* You will need to import [`data.sql`](https://github.com/DecodeMTL/node-mysql-workshop/blob/master/data.sql) to your MySQL server to get some basic tables going
+* Your work will mostly be done in an `index.js` file. If you feel up for it, you can separate your work in modules but this is not required right now.
+* You should start by creating an empty ExpressJS app, make sure it can listen properly, and then make sure you can make a basic MySQL query. Once you have that, you will be in a better position to get started.
 
 ## Overview
 *please take the time to read this carefully, and ask us questions if you do not understand what you are reading*
