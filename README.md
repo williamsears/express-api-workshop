@@ -20,7 +20,7 @@ Our API will be based on the **client-server model**: this will allow us to sepa
 
 Our API will be **resource-based**, and will be sending and receiving **representations** of these resources. Resources are already a familiar concept on the web, where every resource gets its own URL. For example, the website of DecodeMTL is at http://www.decodemtl.com/ and the about page is at http://www.decodemtl.com/about/. In our case, the resources that we are dealing with will not be web pages and images. Rather, they will be accounts and address books, entries and emails, ...
 
-We will make these resources available using different URL patterns and HTTP verbs. One common way of doing that is making each resource available as /<ResourceName> and use HTTP verbs to describe what we want to do with the resource. Here is how part of our API could look during its development:
+We will make these resources available using different URL patterns and HTTP verbs. One common way of doing that is making each resource available as /ResourceName and use HTTP verbs to describe what we want to do with the resource. Here is how part of our API could look during its development:
 
 ```
 GET /Accounts --> retrieve all accounts in the DB (which the user is authorized to look at)
