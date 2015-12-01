@@ -56,13 +56,13 @@ Create a new endpoint `GET /AddressBooks`. When this endpoint is requested, it s
 Create a new endpoint `GET /AddressBooks/:id`. When it is requested, it will respond with a single addressbook by its ID. If the requested addressbook does not exist, or if it belongs to an account other than the logged in account, you should return a `404 Not Found` response to the user.
 
 ## Part 4: Creating a new addressbook
-Create a new endpoint `POST /AddressBooks`. When it is requested, it will look at the `request.body` and find out if it has a `name` property. Then, if the user is logged in, create a new address book with that name, and assign it to the currently logged in account. If the user is not logged in, this endpoint should return a `404 Not Found` instead.
+Create a new endpoint `POST /AddressBooks`. When it is requested, it will look at the `request.body` and find out if it has a `name` property. Then, if the user is logged in (i.e. if `request.accountId` is defined), create a new address book with that name, and assign it to the currently logged in account. As a response, send a **representation** of the addressbook as a JSON object with the `id` and `name`. If the user is not logged in, this endpoint should return a `404 Not Found` instead.
 
 ## Part 5: Deleting an addressbook
 Create a new endpoint `DELETE /AddressBooks/:id`. When it is requested, it will delete the addressbook by its ID, only if it belongs to the logged in user. Otherwise it will return a `404 Not Found` message.
 
 ## Part 6: Modifying an addressbook
-Create a new endpoint `PUT /AddressBooks/:id`. When it is requested, it will look at the `request.body` and modify the addressbook based on the passed in form data, only if the addressbook belongs to the currently logged in user. Otherwise it will return a `404 Not Found` message.
+Create a new endpoint `PUT /AddressBooks/:id`. When it is requested, it will look at the `request.body` and modify the addressbook based on the passed in form data, only if the addressbook belongs to the currently logged in user. Then it will return a JSON string corresponding to the new representation of the object. Otherwise it will return a `404 Not Found` message.
 
 ## Look back on what we did
 After having completed all these endpoints, we are now exposing functionality that enables us to manage AddressBook resources: we can create them, list them, update them and delete them. This is commonly referred to as CRUD -- short for **C**reate, **R**ead, **U**pdate, **D**elete -- and forms the basis of our API. We could eventually add new functionalty on top of that to do more complex things, but just being able to do basic CRUD can get us pretty far!
@@ -73,4 +73,28 @@ In this part, we are going to create a similar set of endpoints that we did for 
 ## Part 8: more copy/pasta!
 Here, we are going to create the same CRUD endpoints for addresses/emails/phones. As always, we want to make sure that we are only adding these objects if the user is authorized to do it. Otherwise, we might as well give them access to our database :)
 
-## Part 9: adding user signup and login!
+## Part 9: adding user signup!
+In this part we will be adding user signup to our application, allowing users to create real accounts and take ownership of their address books.
+
+To do so, we will be exposing a `POST /Accounts/signup` endpoint that will receive `email` and `password`, and create a new account in our MySQL database. If the account creation is successful, we will return a representation of the newly created account to the user as a JSON string, with `id` and `email` properties.
+
+*Before adding the account to our database*, we will take care of **hashing the user's password**. Hashing is a mechanism by which we can "encode" a string in a way that is not recoverable. Many algorithms exist to create such hashes out of string (passwords for us), and choosing the best one is not an easy task. This is why we will be using a library to do the encoding of passwords. A great one for NodeJS is called [`bcrypt-nodejs`](https://www.npmjs.com/package/bcrypt-nodejs). For our purposes, we will be using the `bcrypt.hashSync` function mentioned in the README. Since this hashing process can be quite intensive on the CPU, there is an asynchronous version that can be used for performance.
+
+Finally we want to make sure **email addresses are unique**. If we try to add two Accounts with the same `email` our database does not care at the moment. We *could* fix this by checking if the provided email exists (`SELECT * FROM Accounts WHERE email=...`), but there is a much more robust way. We can take advantage of MySQL's unique indexes to enforce unique emails. In general, we would have created our Accounts table with the unique constraint, but since we already have the table, we will be altering it with the following query:
+
+```sql
+ALTER TABLE Accounts ADD UNIQUE KEY unique_emails(email);
+```
+
+Depending on the status of our data, running this could either work fine, or throw the following error at us:
+
+```
+ERROR 1062 (23000): Duplicate entry 'test@test.com' for key 'unique_email'
+```
+
+If we get this, then our unique index was not added to the table. We would manually clean up the table and re-run the query. **In a real production app, this would be handled a bit differently to ensure we don't lose customer data**.
+
+This "ERROR 1062" is exactly what we will be getting if we try to `INSERT` a new account with an already existing email. We should be checking for that in our code, and tell the user that they should use a different email. Some people choose to send a `409 Conflict` error status, but others choose the `400 Bad Request`.
+
+Once all that is done, make sure to test this endpoint for all possible cases.
+
