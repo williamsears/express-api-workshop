@@ -123,3 +123,55 @@ To do this, we'll need a few steps:
   5. As a last step, we will create an Express middleware. It will be checking `request.query.token`, and making a MySQL query to find out if there is a token that matches. If it does, we will set `request.accountId` to be that account. Otherwise we will **make sure that `request.accountId` is set to an empty value**, either by manually setting it to `null` or by doing `delete request.accountId`. Even though this seems overboard, it's a simple way to be safer.
 
 Following this, you should test your login/signup system thoroughly.
+
+## Part 11: filtering, sorting, pagination and relationships
+With our newly-acquired knowledge of using the Sequelize ORM, we will have a much easier time adding filtering, sorting, pagination and relationships to make our API more pleasing to use. Here is a brief overview of each of these features:
+
+### Pagination
+When retrieving a list of entities the list can be quite long. Sometimes we only want to see a "page" of results, and either let the user click for further pages like on Google's search results, or let the user infinitely scroll to get more results like on Facebook's feed.
+
+Both operations are accomplished by adding `limit` and `offset` parameters to our queries. For example, doing a `GET` request to `/AddessBooks?limit=5` should return only the first 5 address books, and `/AddressBooks?limit=5&offset=5` should return the next 5 until there are no more results.
+
+### Sorting
+When retrieving a list of entities we may require that the list be in a particular order. For example, some users will choose to have their address books sorted by first name, others by last name.
+
+We should be able to provide these results to our users by having them add a `sort` parameter to the query string. We will also need to know the `sort_direction`, but we can assume it to be ascending by default.
+
+For example, a `GET` request to `/Entries?sort=firstName` will return the entries in alphabetical order of first name. Sending a `GET` to `/Entries?sort=lastName&sort_direction=desc` will return the entries in reverse alphabetical order of last name.
+
+### Filtering
+When retrieving a list of entities, the user might optionally be trying to filter it. We can provide some basic filtering on strings and numbers. One way of doing this is to let the user pass a JSON-encoded `filter` parameter in the query, something like this: `GET /Entries?filter={"firstName": "ziad"}`.
+
+### Relationships
+When retrieving a list of entities, the user might optionally want to include related entities. For example, when doing a request to `/Entries/123`, the user might want to get all addresses/emails/phones related to Entry ID 123.
+
+One way of doing this would be to let the user pass an `include` query parameter, with a comma-separated list of relationships. For example, requesting `/Entries/123?include=emails,phones` could return something like this:
+
+```js
+{
+  "id": 123,
+  "firstName": "John",
+  "lastName": "Smith",
+  "emails": [
+    {
+      "id": 42,
+      "email": "john@smith.com",
+      "type": "home"
+    },
+    // ...
+  ],
+  "phones": [
+    {
+      "id": 38,
+      "type": "work",
+      "phoneNumber": "514-555-1212"
+    },
+    // ...
+  ]
+}
+```
+
+### Implementing it!
+Using the Sequelize ORM, most of these features are quite straightforward to implement. For example, instead of doing a call to `Entry.findAll()`, one would do `Entry.findAll({limit: 10})` or `Entry.findAll({limit: req.query.limit})`.
+
+Using the [Sequelize documentation](http://docs.sequelizejs.com/en/latest/), implement one of these features at a time. This is definitely work that can be split up between the different members of your team :)
