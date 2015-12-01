@@ -98,3 +98,28 @@ This "ERROR 1062" is exactly what we will be getting if we try to `INSERT` a new
 
 Once all that is done, make sure to test this endpoint for all possible cases.
 
+## Part 10: Adding user login
+User signup and login is a complex subject filled with traps. Everything we built so far has been using this `accountId` from the `request` object, trusting that it will correspond to the actual owner of that data. To enforce this, many things have to be done in a real production-ready application:
+
+  * Securely hashing passwords to ensure some level of security
+  * Making sure our application is running over HTTPS
+  * Limiting the number of times a user can try to login, using [CAPTCHAs](https://www.google.com/recaptcha/intro/index.html)
+  * Letting users sign in with facebook/twitter/linkedin/whatever-other-provider
+  * Allowing the user to reset their password if they forgot it
+  * And the list goes on and on...
+
+For these reasons, many projects are built upon existing user management functionalities. [Stormpath](https://stormpath.com/) is one example of a web service that provides all sorts of user management features. [PassportJS](http://passportjs.org/) is a NodeJS library that can ease the creation of user functionalities directly in your own API.
+
+In our case, we will be implementing a basic `POST /Accounts/login` endpoint. It will accept an email and a password, and will manually check if the information is correct. To do so, we will need to encode the password using the same `bcrypt` library we used to store the user's password.
+
+If we find a matching account in the database, we will be giving a token to the user that they can use to identify further HTTP requests. We will have to store this token along with the account ID. This will provide us with a secure way to let users identify themselves: they'll just have to add `?token=XXXXX` to every call they make to our API. This way, we can preserve the **statelessness** of our server.
+
+To do this, we'll need a few steps:
+
+  1. Create a new table called `Tokens` in MySQL. It will have two columns, `token` and `accountId`. This table does not need an automatically incrementing unique ID. We will be adding rows to this table to link tokens to accounts.
+  2. When a user successfully logs in to the system by doing a `POST /Accounts/login`, we will generate a random token. A good way to do this is to use `bcrypt`'s `genSaltSync` function.
+  3. We will add that token to our `Tokens` table, and return it to the user as a JSON result like `{"token": "xyzjfkejk"}`.
+  4. After that, it will be up to the user to identify themselves by passing this token to us in the query string.
+  5. As a last step, we will create an Express middleware. It will be checking `request.query.token`, and making a MySQL query to find out if there is a token that matches. If it does, we will set `request.accountId` to be that account. Otherwise we will **make sure that `request.accountId` is set to an empty value**, either by manually setting it to `null` or by doing `delete request.accountId`. Even though this seems overboard, it's a simple way to be safer.
+
+Following this, you should test your login/signup system thoroughly.
