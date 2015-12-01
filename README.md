@@ -2,11 +2,14 @@
 *Your express way to the web development world!*
 
 ## Basic instructions
+* You are **ENCOURAGED** to work in teams of two or three students on this workshop! Here, encouraged is a euphemism ;)
 * Fork this repository and create a new Cloud9 project by cloning your fork
 * For this workshop you can do all your work in the `master` branch :)
 * After each part, **make sure to commit AND push your work**!
 
 ## Overview
+*please take the time to read this carefully, and ask us questions if you do not understand what you are reading*
+
 In this workshop, we will be creating our first tiny API. This API -- or interface -- will be the point of contact between our users and a database of address books (contact information).
 
 We will present the user with a few URL patterns that they will use with different HTTP verbs (GET/POST/PUT/DELETE). Using the **uniform interface** that is the HTTP protocol, we will enable a variety of standard, compatible clients to connect to our API and use it to manage their contacts. The API will therefore be available to web browsers, iPhone/Android apps, and any other system that can connect to the internet and has web access.
