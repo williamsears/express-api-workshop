@@ -23,6 +23,12 @@ app.get('/', function(req, res) {
     res.send(rows);
     });
 });
+app.get('/AddressBooks', function(req, res) {
+    connection.query("select * from AddressBook", function(err, rows, fields) {
+    if (err) throw err;
+    res.send(rows);
+    });
+});
 
 
 var server = app.listen(process.env.PORT, process.env.IP, function() {
