@@ -40,6 +40,17 @@ app.get('/AddressBooks/:id', function(req, res) {
     }
     });
 });
+app.post('/AddressBooks', function(req, res) {
+     if (!req.body.name) {
+         res.status(404).send()
+     }
+     else {
+          connection.query("INSERT into AddressBook (accountId, name) values ("+req.accountId+",'"+req.body.name+"')", function(err, rows) {
+              if (err) throw err;
+              console.log(rows);
+          });
+     }
+});
 
 
 var server = app.listen(process.env.PORT, process.env.IP, function() {
