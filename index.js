@@ -29,6 +29,17 @@ app.get('/AddressBooks', function(req, res) {
     res.send(rows);
     });
 });
+app.get('/AddressBooks/:id', function(req, res) {
+    var ident = req.params.id;
+    connection.query("select * from AddressBook where id=" + req.params.id, function(err, rows) {
+        if (err) throw err;
+    if (rows.length === 0){
+        res.status(400).send("No matches found!");
+    } else {
+    res.send(rows);
+    }
+    });
+});
 
 
 var server = app.listen(process.env.PORT, process.env.IP, function() {
