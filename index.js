@@ -51,6 +51,17 @@ app.post('/AddressBooks', function(req, res) {
           });
      }
 });
+app.delete('/AddressBooks/:id', function(req, res) {
+    if (parseInt(req.params.id) === req.accountId) {
+       connection.query("DELETE FROM AddressBook WHERE id =" + req.params.id, function(err, rows) {
+           if (err) throw err;
+           console.log("DeleteSuccess")
+       });
+    } else {
+        console.log("Sorry you do not have the permissions to delete this")
+    }
+    
+});
 
 
 var server = app.listen(process.env.PORT, process.env.IP, function() {
