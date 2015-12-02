@@ -13,7 +13,7 @@ var app = express();
 app.use(bodyParser.json());
 
 app.use(function(request, response, next){
-    request.accountId = 1;
+    request.accountId = 2;
     next();
 });
 
@@ -55,14 +55,25 @@ app.delete('/AddressBooks/:id', function(req, res) {
     if (parseInt(req.params.id) === req.accountId) {
        connection.query("DELETE FROM AddressBook WHERE id =" + req.params.id, function(err, rows) {
            if (err) throw err;
-           console.log("DeleteSuccess")
+           console.log("DeleteSuccess");
        });
     } else {
-        console.log("Sorry you do not have the permissions to delete this")
+        console.log("Sorry you do not have the permissions to delete this");
     }
     
 });
 
+app.put('/AddressBooks/:id', function(req, res) {
+    if (parseInt(req.params.id) === req.accountId) {
+        connection.query("UPDATE AddressBook SET name = '" + req.body.name + "' WHERE '" + req.params.id + "' = AddressBook.id AND AddressBook.accountId='" + req.accountId + "'",function(err, rows){
+            if (err) throw err;
+            console.log("Edited");
+            console.log(rows);
+        });
+    } else {
+        console.log("Invalid Permission");
+    }
+});
 
 var server = app.listen(process.env.PORT, process.env.IP, function() {
       var host = server.address().address;
